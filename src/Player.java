@@ -17,9 +17,10 @@ public class Player {
         this.name = name;
     }
 
-    public int sendState()
+    public int sendState(int cmd, String data)
     {
-        //Recieved data from DataBase
+        String result = Base64Codec.Encode(cmd);
+        result += data;
         return -1;
     }
 

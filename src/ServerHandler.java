@@ -105,7 +105,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         return -1;
     }
 
-    public void auth(ChannelHandlerContext ctx, String s)
+    public void auth(ChannelHandlerContext ctx, String s) throws Exception
     {
         WrapperString ws = new WrapperString(s);
         int id = Base64Codec.DecodeFromString(ws);

@@ -3,6 +3,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.io.Console;
+import java.sql.ResultSet;
 import java.util.*;
 import java.lang.*;
 
@@ -23,7 +24,7 @@ public class Global {
     }
 
 
-    public int connect(int id, ChannelHandlerContext ctx)
+    public int connect(int id, ChannelHandlerContext ctx) throws Exception
     {
         if(playersId.contains(id)) return -1;
         if(players.containsKey(ctx)) return -2;
@@ -31,6 +32,7 @@ public class Global {
         Player p = new Player(id, ctx);
         players.put(ctx, p);
         playersId.add(p.id);
+
         return 0;
     }
 
@@ -59,6 +61,7 @@ public class Global {
     public static void main(String[] args) throws Exception
     {
         instance = new Global();
+        DataBase.configure();
         Server.configure();
     }
 }
