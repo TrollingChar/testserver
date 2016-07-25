@@ -85,7 +85,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             if(!Global.instance.hub.contains(Global.instance.players.get(ctx)))
                 Global.instance.hub.add(Global.instance.players.get(ctx));
 
-            ctx.writeAndFlush("ready : on");
+            ctx.writeAndFlush("ready:on");
             return 0;
         }
         return -1;
@@ -99,7 +99,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             if(Global.instance.hub.contains(Global.instance.players.get(ctx)))
                 Global.instance.hub.remove(Global.instance.players.get(ctx));
 
-            ctx.writeAndFlush("ready : off");
+            ctx.writeAndFlush("ready:off");
             return 0;
         }
         return -1;
@@ -112,19 +112,25 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
         if(Global.instance.connect(id, ctx) < 0) {
             System.out.print("this id already of server id : " + id);
-            ctx.writeAndFlush("your are already logged in");
+            ctx.writeAndFlush(Base64Codec.Encode(ServerCommands.ALREADY_AUTH));
             if(Global.instance.players.containsKey(ctx))
                 Global.instance.disconnect(Global.instance.players.get(ctx));
         }
         else {
             System.out.println("player connect accepted id : " + id);
-            ctx.writeAndFlush("connect accepted");
+
+            String data = new String("");
+            //проверка базы данных на наличие авторизовавшегося id
+            //если id зарегестрирован - отправляем данные
+            // если id не зарегестрирован - регистрируем
+
+            ctx.writeAndFlush(Base64Codec.Encode(ServerCommands.STATUS) + data);
         }
     }
 
     public void userNotDefined(ChannelHandlerContext ctx)
     {
-        ctx.writeAndFlush("your id does not authentificated");
+        ctx.writeAndFlush(Base64Codec.Encode(ServerCommands.USER_NOT_DEFINED));
         ctx.close();
         System.out.println("user not defined");
     }
