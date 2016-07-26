@@ -17,6 +17,40 @@ public class Player {
         this.name = name;
     }
 
+    public void sendLoginConfirm() {
+        ctx.writeAndFlush("0");
+    }
+
+    public void sendCancelBattle() {
+        ctx.writeAndFlush("2");
+    }
+
+    public void sendStartBattle() {
+        String s = "3";
+        //
+        ctx.writeAndFlush(s);
+    }
+
+    public int receiveReadyToBattle() {
+        System.out.println("player " + id + " wants to play!");
+        if(ready) return -1;
+        System.out.println("adding him to hub");
+        ready = true;
+        Global.instance.hub.add(this);
+        Global.instance.checkHub();
+        return 0;
+    }
+
+    public int receiveCancelBattle() {
+        System.out.println("player " + id + " hit cancel button");
+        if(!ready) return -1;
+        System.out.println("removing him from hub");
+        ready = false;
+        Global.instance.hub.remove(this);
+        sendCancelBattle();
+        return 0;
+    }
+    /*
     public int sendState(int cmd, String data)
     {
         String result = Base64Codec.Encode(cmd);
@@ -27,4 +61,5 @@ public class Player {
     public void sendMessage(String msg) {
         ctx.writeAndFlush(msg+"\n");
     }
+    */
 }

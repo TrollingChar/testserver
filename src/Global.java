@@ -23,15 +23,18 @@ public class Global {
         hub = new LinkedList<>();
     }
 
-
-    public int connect(int id, ChannelHandlerContext ctx) throws Exception
+    public int connect(int id, ChannelHandlerContext ctx)// throws Exception
     {
         if(playersId.contains(id)) return -1;
         if(players.containsKey(ctx)) return -2;
 
         Player p = new Player(id, ctx);
         players.put(ctx, p);
-        playersId.add(p.id);
+        playersId.add(id);
+
+        // вот тут пиши код который выполнится когда игрок зайдет или залогинится
+        System.out.println("new player connected: " + id);
+        p.sendLoginConfirm();
 
         return 0;
     }
@@ -49,7 +52,7 @@ public class Global {
         if(hub.size() == capacityHub) {
             for (Player p : hub) {
                 p.ready = false;
-                p.sendMessage("battle ground active + your id : " + p.id);
+                //p.sendMessage("battle ground active + your id : " + p.id);
                 rooms.put(new Room(), p);
             }
             hub.clear();
@@ -61,7 +64,7 @@ public class Global {
     public static void main(String[] args) throws Exception
     {
         instance = new Global();
-        DataBase.configure();
+        //DataBase.configure();
         Server.configure();
     }
 }

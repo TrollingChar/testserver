@@ -26,6 +26,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String s = (String) msg;
 
+        System.out.println(s);
+
         int messageType;
         if(s.length() == 0) {
             messageType = -1;
@@ -37,25 +39,19 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         switch (messageType) {
 
             case ClientCommands.AUTH:
-                this.auth(ctx, s);
+                receiveAuth(ctx, s);
                 break;
 
             case ClientCommands.PING:
-                if(Global.instance.players.containsKey(ctx) == false) {
-                    userNotDefined(ctx);
-                }
+                receivePing(ctx);
                 break;
 
-            case ClientCommands.READY:
-                if(setReadyOn(ctx) < 0) {
-                    userNotDefined(ctx);
-                }
+            case ClientCommands.READY_TO_BATTLE:
+                receiveReadyToBattle(ctx);
                 break;
 
-            case ClientCommands.CANCEL:
-                if(setReadyOff(ctx) < 0) {
-                    userNotDefined(ctx);
-                }
+            case ClientCommands.CANCEL_BATTLE:
+                receiveCancelBattle(ctx);
                 break;
 
             default:
@@ -66,12 +62,47 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    private void receiveCancelBattle(ChannelHandlerContext ctx) {
+        if(!Global.instance.players.containsKey(ctx)) {
+            System.out.println("who was that?");
+            ctx.close();
+        }
+        Global.instance.players.get(ctx).receiveCancelBattle();
+    }
+
+    private void receiveReadyToBattle(ChannelHandlerContext ctx) {
+        if(!Global.instance.players.containsKey(ctx)) {
+            System.out.println("who was that?");
+            ctx.close();
+        }
+        Global.instance.players.get(ctx).receiveReadyToBattle();
+    }
+
+    private void receivePing(ChannelHandlerContext ctx) {
+
+    }
+
+    private void receiveAuth(ChannelHandlerContext ctx, String s) {
+        WrapperString ws = new WrapperString(s);
+        int id = Base64Codec.DecodeFromString(ws);
+
+        int result = Global.instance.connect(id, ctx);
+        // пытаемся подключить игрока
+        if(result < 0) {
+            System.out.println("auth error: "+result);
+            ctx.writeAndFlush(Base64Codec.Encode(ServerCommands.ERROR));
+            ctx.close();
+        }
+    }
+
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
         if (cause instanceof ReadTimeoutException) {
             if(Global.instance.players.containsKey(ctx))
                 Global.instance.disconnect(Global.instance.players.get(ctx));
+            else
+                ctx.close();
         } else {
 
         }
