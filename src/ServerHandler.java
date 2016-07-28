@@ -1,14 +1,18 @@
 
 
 import java.io.*;
-
-import com.sun.org.apache.xpath.internal.operations.String;
+//import com.sun.org.apache.xpath.internal.operations.String;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.timeout.ReadTimeoutException;
 import io.netty.util.concurrent.EventExecutor;
+
+import java.lang.*;
 
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
@@ -35,6 +39,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }else{
             messageType = Base64Codec.Decode(s.charAt(0));
             s = s.substring(1);
+
         }
 
         switch (messageType) {
@@ -70,6 +75,26 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 break;
         }
     }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent e = (IdleStateEvent) evt;
+            if (e.state() == IdleState.READER_IDLE) {
+                //При отсутсвии входящего трафика = отключаем
+                Global.instance.disconnect(Global.instance.players.get(ctx));
+            }
+//            else if (e.state() == IdleState.WRITER_IDLE) {
+//                //Обработчие : при отсутсвии исходящего трафика
+//
+//            }else if (e.state() == IdleState.ALL_IDLE) {
+//                //Обработчие : при отсутсвии входящего и исходящего трафика
+//
+//            }
+        }
+    }
+
+
 
     private void receiveTurn (ChannelHandlerContext ctx, String s){
         if(!Global.instance.players.containsKey(ctx)) {

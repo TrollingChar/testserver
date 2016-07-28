@@ -1,5 +1,6 @@
 import io.netty.channel.ChannelHandlerContext;
 
+
 /**
  * Created by UserName on 06.07.2016.
  */
@@ -61,15 +62,15 @@ public class Player {
         return 0;
     }
 
-    public int receiveTurn(String s) {
+  /*  public int receiveTurn(String s) {
         if(room == null) return -1;
         room.
-    }
+    }*/
 
-    public int receiveSyncronize(boolean alive) {
+    /*public int receiveSyncronize(boolean alive) {
         if(room == null) return -1;
         room.setReady(this, alive);
-    }
+    }*/
     /*
     public int sendState(int cmd, String data)
     {

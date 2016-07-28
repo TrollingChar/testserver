@@ -15,6 +15,7 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 
 import java.nio.charset.Charset;
@@ -57,7 +58,13 @@ public final class Server {
                             pipeline.addLast("prepender", new LengthFieldPrepender(2));
                             pipeline.addLast("decoder", new StringDecoder());
                             pipeline.addLast("encoder", new StringEncoder());
-                     //       pipeline.addLast("timeouthandler", new ReadTimeoutHandler(5000));
+                            //IdleStateHandler :
+                            //Обрабатывать -
+                            //первый параметр : если нет входящего трафика в течении n - секунд
+                            //второй параметр : если нет исходящего трафика в течении n - секунд
+                            //третий параметр : если нет исходящего и входящего трафика в течении n - секунд
+                            //если параметр == 0, обработчик отключается
+                            pipeline.addLast("IdleStateHandler", new IdleStateHandler(3, 0, 0));
                             pipeline.addLast("handler", new ServerHandler());
                         }
                     });
