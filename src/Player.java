@@ -8,6 +8,8 @@ public class Player {
     boolean ready;
     int id;
     ChannelHandlerContext ctx;
+    Room room;
+    boolean canGetTurn;
 
     public Player(int id, ChannelHandlerContext ctx)
     {
