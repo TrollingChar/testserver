@@ -77,6 +77,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             ctx.close();
         }
 
+
     }
 
     private void receiveSyncronize (ChannelHandlerContext ctx, String s){
