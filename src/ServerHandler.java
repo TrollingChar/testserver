@@ -2,6 +2,7 @@
 
 import java.io.*;
 
+import com.sun.org.apache.xpath.internal.operations.String;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.group.ChannelGroup;
@@ -54,11 +55,35 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 receiveCancelBattle(ctx);
                 break;
 
+            case ClientCommands.SYNCRONIZE:
+                receiveSyncronize(ctx, s);
+                break;
+
+            case ClientCommands.TURN:
+                receiveTurn(ctx, s);
+                break;
+
             default:
                 System.out.println("echo");
                 ctx.writeAndFlush(s);
                 //ctx.close();
                 break;
+        }
+    }
+
+    private void receiveTurn (ChannelHandlerContext ctx, String s){
+        if(!Global.instance.players.containsKey(ctx)) {
+            System.out.println("who was that?");
+            ctx.close();
+        }
+
+
+    }
+
+    private void receiveSyncronize (ChannelHandlerContext ctx, String s){
+        if(!Global.instance.players.containsKey(ctx)) {
+            System.out.println("who was that?");
+            ctx.close();
         }
     }
 

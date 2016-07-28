@@ -33,6 +33,14 @@ public class Player {
         ctx.writeAndFlush(s);
     }
 
+    public void sendTurn(String s) {
+
+    }
+
+    public void sendActivePlayer(int id) {
+
+    }
+
     public int receiveReadyToBattle() {
         System.out.println("player " + id + " wants to play!");
         if(ready) return -1;
@@ -51,6 +59,16 @@ public class Player {
         Global.instance.hub.remove(this);
         sendCancelBattle();
         return 0;
+    }
+
+    public int receiveTurn(String s) {
+        if(room == null) return -1;
+        room.
+    }
+
+    public int receiveSyncronize(boolean alive) {
+        if(room == null) return -1;
+        room.setReady(this, alive);
     }
     /*
     public int sendState(int cmd, String data)

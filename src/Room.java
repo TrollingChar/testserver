@@ -34,7 +34,6 @@ public class Room {
             endGame(null);
         }
         if (playersAlive == 1) {
-
         }
     }
 
