@@ -1,86 +1,90 @@
 import io.netty.channel.ChannelHandlerContext;
 
+import java.util.LinkedList;
 
 /**
  * Created by UserName on 06.07.2016.
  */
 public class Player {
-    String name;
-    boolean ready;
-    int id;
-    ChannelHandlerContext ctx;
-    Room room;
-    boolean canGetTurn;
+    public ChannelHandlerContext ctx;
+    public int id;
+    public boolean inHub;
 
-    public Player(int id, ChannelHandlerContext ctx)
-    {
-        this.id = id;
+    public Room room;
+
+    public Player(ChannelHandlerContext ctx, int id) {
         this.ctx = ctx;
-        this.ready = false;
-        this.name = name;
+        this.id = id;
     }
 
-    public void sendLoginConfirm() {
-        ctx.writeAndFlush("0");
+    public void receiveToBattle() {
+        // мы не хотим, чтобы игрока кинуло в 2 игры сразу
+        if(room != null) return;
+
+        if(inHub) return; // ты уже ждешь боя
+
+        Main.I.receiveToBattle(this);
     }
 
-    public void sendCancelBattle() {
-        ctx.writeAndFlush("2");
+    public void receiveCancel() {
+        // поздно! мы уже кинули тебя в игру!
+        if(room != null) return;
+
+        if(!inHub) return; // нечего отменять
+
+        Main.I.receiveCancel(this);
     }
 
-    public void sendStartBattle() {
-        String s = "3";
-        //
-        ctx.writeAndFlush(s);
+    public void receiveDisconnect() {
+        if(room != null) {
+            room.receiveDisconnect(this);
+        }
+        Main.I.receiveDisconnect(this);
     }
 
-    public void sendTurn(String s) {
-
+    public void receiveSynchronize(boolean alive) {
+        if(room == null) {
+            return;
+        }
+        room.receiveSynchronize(this, alive);
     }
 
-    public void sendActivePlayer(int id) {
-
+    public void receiveInputData(String s) {
+        if(room == null) {
+            return;
+        }
+        room.receiveInputData(this, s);
     }
 
-    public int receiveReadyToBattle() {
-        System.out.println("player " + id + " wants to play!");
-        if(ready) return -1;
-        System.out.println("adding him to hub");
-        ready = true;
-        Global.instance.hub.add(this);
-        Global.instance.checkHub();
-        return 0;
+    public void sendAuthConfirm() {
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.AUTH_CONFIRM) + "\n");
     }
 
-    public int receiveCancelBattle() {
-        System.out.println("player " + id + " hit cancel button");
-        if(!ready) return -1;
-        System.out.println("removing him from hub");
-        ready = false;
-        Global.instance.hub.remove(this);
-        sendCancelBattle();
-        return 0;
+    public void sendStartBattle(LinkedList<Player> players) {
+        String s = Base64Codec.Encode(players.size());
+        for (Player player : players) {
+            s += Base64Codec.Encode(player.id);
+        }
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.START_BATTLE) + "\n");
     }
 
-  /*  public int receiveTurn(String s) {
-        if(room == null) return -1;
-        room.
-    }*/
-
-    /*public int receiveSyncronize(boolean alive) {
-        if(room == null) return -1;
-        room.setReady(this, alive);
-    }*/
-    /*
-    public int sendState(int cmd, String data)
-    {
-        String result = Base64Codec.Encode(cmd);
-        result += data;
-        return -1;
+    public void sendCancel() {
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.CANCEL) + "\n");
     }
 
-    public void sendMessage(String msg) {
-        ctx.writeAndFlush(msg+"\n");
+    public void sendHisTurn(int id) {
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.HIS_TURN)+Base64Codec.Encode(id) + "\n");
     }
-    */
+
+    public void sendInputData(String s) {
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.INPUT_DATA) + s + "\n");
+    }
+
+    public void sendEndBattle(int winner) {
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.END_BATTLE)+Base64Codec.Encode(id) + "\n");
+    }
+
+    public void sendPlayerLeft(int id) {
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.PLAYER_LEFT)+Base64Codec.Encode(id) + "\n");
+    }
 }

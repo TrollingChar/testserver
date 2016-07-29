@@ -1,47 +1,100 @@
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Created by UserName on 12.07.2016.
  */
 public class Room {
-    int randomSeed;
-    int playersNotReady;        // от скольки игроков мы ожидаем сингал готовности
-    int playersAlive;           // число оставшихся в игре игроков, нужно для условий победы/ничьей
+    LinkedList<Player> players;
+    Set<Player> readyPlayers;
 
-    Player activePlayer = null;
-    Queue<Player> players;
+    Player activePlayer;
+    LinkedList<Player> playerQueue;
 
-    void init() {
-        // отправить всем клиентам сообщение о начале боя
+    public Room(Collection<Player> players) {
+        // это 2 разных списка, у них разные указатели
+        this.players = new LinkedList<>(players);
+        playerQueue = new LinkedList<>(players);
+        readyPlayers = new HashSet<>();
+        for (Player player : players) {
+            player.inHub = false;
+        }
+        sendStartBattle();
+    }
 
-        playersNotReady =
-        playersAlive = players.size();
-
-        for(Player player : players) {
-            player.canGetTurn = true;
+    public void receiveDisconnect(Player player) {
+        // не рассылаем ему сообщения
+        player.room = null;
+        players.remove(player);
+        playerQueue.remove(player);
+        readyPlayers.remove(player);
+        if(activePlayer == player) {
+            activePlayer = null;
+            sendPlayerLeft(player.id);
+        }
+        if(players.size() == readyPlayers.size()) {
+            newTurn();
         }
     }
 
-    void setReady(Player player, Boolean alive) {
-        playersNotReady--;
-        if(!alive) {
-            player.canGetTurn = false;
-        }
-    }
-
-    void newTurn() {
-        if(playersAlive == 0) {
-            endGame(null);
-        }
-        if (playersAlive == 1) {
-        }
-    }
-
-    void endGame(Player winner) {
-        if(winner == null) {
-
+    private void newTurn() {
+        readyPlayers.clear();
+        activePlayer = playerQueue.remove();
+        if (playerQueue.size() == 0) {
+            sendEndBattle();
+            for (Player player : players) {
+                player.room = null;
+            }
         } else {
+            playerQueue.add(activePlayer);
+            sendHisTurn(activePlayer.id);
+        }
+    }
 
+    private void sendPlayerLeft(int id) {
+        for (Player player : players) {
+            player.sendPlayerLeft(id);
+        }
+    }
+
+    public void receiveSynchronize(Player player, boolean alive) {
+        readyPlayers.add(player);
+        if (!alive) {
+            playerQueue.remove(player);
+        }
+        if(players.size() == readyPlayers.size()) {
+            newTurn();
+        }
+    }
+
+    public void receiveInputData(Player player, String s) {
+        if(player == activePlayer) {
+            sendInputData(s);
+        }
+    }
+
+    public void sendStartBattle() {
+        for (Player player : players) {
+            player.sendStartBattle(players);
+        }
+    }
+
+    public void sendHisTurn(int id) {
+        for (Player player : players) {
+            player.sendHisTurn(id);
+        }
+    }
+
+    public void sendInputData(String s) {
+        for (Player player : players) {
+            if(player != activePlayer) {
+                player.sendInputData(s);
+            }
+        }
+    }
+
+    public void sendEndBattle() {
+        for (Player player : players) {
+            player.sendEndBattle(activePlayer == null ? 0 : activePlayer.id);
         }
     }
 }
