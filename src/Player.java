@@ -65,7 +65,7 @@ public class Player {
         for (Player player : players) {
             s += Base64Codec.Encode(player.id);
         }
-        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.START_BATTLE) + "\n");
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.START_BATTLE) + s + "\n");
     }
 
     public void sendCancel() {
@@ -73,7 +73,7 @@ public class Player {
     }
 
     public void sendHisTurn(int id) {
-        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.HIS_TURN)+Base64Codec.Encode(id) + "\n");
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.HIS_TURN) + Base64Codec.Encode(id) + "\n");
     }
 
     public void sendInputData(String s) {

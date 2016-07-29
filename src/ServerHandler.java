@@ -27,7 +27,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String s = (String) msg;
 
-        //System.out.println(s);
+        System.out.println(s);
 
         int messageType;
         if(s == "") {
@@ -100,7 +100,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private void receiveAuthorize(ChannelHandlerContext ctx, String s) {
         WrapperString ws = new WrapperString(s);
         int id = Base64Codec.DecodeFromString(ws);
-        System.out.println(Main.I);
         Main.I.receiveAuthorize(ctx, id);
     }
 }
