@@ -17,6 +17,7 @@ public class Room {
         readyPlayers = new HashSet<>();
         for (Player player : players) {
             player.inHub = false;
+            player.room = this;
         }
         sendStartBattle();
     }
@@ -38,7 +39,11 @@ public class Room {
 
     private void newTurn() {
         readyPlayers.clear();
-        activePlayer = playerQueue.remove();
+        if(playerQueue.size() > 0) {
+            activePlayer = playerQueue.remove();
+        } else {
+            activePlayer = null;
+        }
         if (playerQueue.size() == 0) {
             sendEndBattle();
             for (Player player : players) {

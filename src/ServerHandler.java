@@ -82,7 +82,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private void receiveSynchronize(ChannelHandlerContext ctx, String s) {
         Player pl = Main.I.getPlayer(ctx);
         if(pl == null) ctx.close();
-        pl.receiveSynchronize(s == "");
+        //System.out.println(s.length());
+        pl.receiveSynchronize("".equals(s));
     }
 
     private void receiveCancel(ChannelHandlerContext ctx, String s) {

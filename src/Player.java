@@ -57,11 +57,12 @@ public class Player {
     }
 
     public void sendAuthConfirm() {
+        System.out.println(id);
         ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.AUTH_CONFIRM) + "\n");
     }
 
     public void sendStartBattle(LinkedList<Player> players) {
-        String s = Base64Codec.Encode(players.size());
+        String s = "" + Base64Codec.EncodeToChar(players.size());
         for (Player player : players) {
             s += Base64Codec.Encode(player.id);
         }
@@ -81,7 +82,7 @@ public class Player {
     }
 
     public void sendEndBattle(int winner) {
-        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.END_BATTLE)+Base64Codec.Encode(id) + "\n");
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.END_BATTLE)+Base64Codec.Encode(winner) + "\n");
     }
 
     public void sendPlayerLeft(int id) {
