@@ -60,10 +60,19 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 receiveInputData(ctx, s);
                 break;
 
+            case ClientCommands.REPEAT:
+                receiveRepeat(ctx, s);
+
             default:
                 receiveDisconnect(ctx);
                 break;
         }
+    }
+
+    private void receiveRepeat(ChannelHandlerContext ctx, String s) {
+        Player pl = Main.I.getPlayer(ctx);
+        if(pl == null) ctx.close();
+        pl.receiveRepeat(Base64Codec.DecodeFromString(new WrapperString(s)));
     }
 
     private void receiveDisconnect(ChannelHandlerContext ctx) {

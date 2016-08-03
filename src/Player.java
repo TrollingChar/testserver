@@ -56,6 +56,13 @@ public class Player {
         room.receiveInputData(this, s);
     }
 
+    public void receiveRepeat(int msgId) {
+        if(room == null) {
+            return;
+        }
+        room.receiveRepeat(this, msgId);
+    }
+
     public void sendAuthConfirm() {
         System.out.println(id);
         ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.AUTH_CONFIRM) + "\n");
@@ -77,8 +84,8 @@ public class Player {
         ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.HIS_TURN) + Base64Codec.Encode(id) + "\n");
     }
 
-    public void sendInputData(String s) {
-        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.INPUT_DATA) + s + "\n");
+    public void sendInputData(int msgId, String s) {
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.INPUT_DATA) + Base64Codec.Encode(msgId) + s + "\n");
     }
 
     public void sendEndBattle(int winner) {

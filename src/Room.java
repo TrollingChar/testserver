@@ -4,6 +4,8 @@ import java.util.*;
  * Created by UserName on 12.07.2016.
  */
 public class Room {
+    HashMap<Integer,String> buffer;
+    int next;
     LinkedList<Player> players;
     Set<Player> readyPlayers;
 
@@ -38,6 +40,8 @@ public class Room {
     }
 
     private void newTurn() {
+        buffer.clear();
+        next = 0;
         readyPlayers.clear();
         if(playerQueue.size() > 0) {
             activePlayer = playerQueue.remove();
@@ -73,7 +77,15 @@ public class Room {
 
     public void receiveInputData(Player player, String s) {
         if(player == activePlayer) {
-            sendInputData(s);
+            sendInputData(next, s);
+            buffer.put(next++, s);
+        }
+    }
+
+    public void receiveRepeat(Player player, int msgId) {
+        if(player != activePlayer) {
+            String s = buffer.get(msgId);
+            if(s != null) sendInputData(player, msgId, buffer.get(msgId));
         }
     }
 
@@ -89,11 +101,15 @@ public class Room {
         }
     }
 
-    public void sendInputData(String s) {
+    public void sendInputData(int msgId, String s) {
         for (Player player : players) {
-            if(player != activePlayer) {
-                player.sendInputData(s);
-            }
+            sendInputData(player, msgId, s);
+        }
+    }
+
+    public void sendInputData(Player player, int msgId, String s) {
+        if(player != activePlayer) {
+            player.sendInputData(msgId, s);
         }
     }
 

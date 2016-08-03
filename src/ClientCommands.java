@@ -7,4 +7,5 @@ public class ClientCommands {
     public static final int CANCEL = 2;
     public static final int SYNCHRONIZE = 3;
     public static final int INPUT_DATA = 4;
+    public static final int REPEAT = 5;
 }
