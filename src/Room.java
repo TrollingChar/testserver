@@ -14,6 +14,7 @@ public class Room {
 
     public Room(Collection<Player> players) {
         // это 2 разных списка, у них разные указатели
+        buffer = new HashMap<>();
         this.players = new LinkedList<>(players);
         playerQueue = new LinkedList<>(players);
         readyPlayers = new HashSet<>();
