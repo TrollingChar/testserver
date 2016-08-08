@@ -5,8 +5,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.handler.codec.http.multipart.MixedAttribute;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.ReadTimeoutException;
 import io.netty.util.concurrent.EventExecutor;
+
+import java.lang.String;
 
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
@@ -18,9 +23,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        //channel.remove(ctx.channel());//Клиент ушел
-
-
+        if(Main.I.getPlayer(ctx) != null)
+            Main.I.receiveDisconnect(Main.I.getPlayer(ctx));
     }
 
     @Override
@@ -66,6 +70,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             default:
                 receiveDisconnect(ctx);
                 break;
+        }
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent e = (IdleStateEvent) evt;
+            if (e.state() == IdleState.READER_IDLE) {
+                if((Main.I.getPlayer(ctx).inHub) || (Main.I.getPlayer(ctx).room != null))
+                    Main.I.receiveDisconnect(Main.I.getPlayer(ctx));
+            }
         }
     }
 
