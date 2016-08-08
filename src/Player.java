@@ -85,7 +85,7 @@ public class Player {
     }
 
     public void sendInputData(int msgId, String s) {
-        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.INPUT_DATA) + Base64Codec.Encode(msgId) + s + "\n");
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.INPUT_DATA) + s + "\n");
     }
 
     public void sendEndBattle(int winner) {
