@@ -59,7 +59,7 @@ public final class Server {
                             pipeline.addLast("prepender", new LengthFieldPrepender(2));
                             pipeline.addLast("decoder", new StringDecoder());
                             pipeline.addLast("encoder", new StringEncoder());
-                            pipeline.addLast("idleStateHandler", new IdleStateHandler(20, 0, 0));
+                            //pipeline.addLast("idleStateHandler", new IdleStateHandler(20, 0, 0));
                             pipeline.addLast("handler", new ServerHandler());
                         }
                     });
