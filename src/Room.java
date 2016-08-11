@@ -41,7 +41,7 @@ public class Room {
     }
 
     private void newTurn() {
-        System.out.println("new turn");
+        System.out.println("  room: new turn");
         buffer.clear();
         next = 0;
         readyPlayers.clear();
@@ -68,14 +68,14 @@ public class Room {
     }
 
     public void receiveSynchronize(Player player, boolean alive) {
-        String s = "sync received";
-        s += player.id + "\n";
+        String s = "  room: sync received\n";
+        s += "   you: " + player.id + "\n ready:\n";
         for (Player p : readyPlayers) {
-            s += p.id + "\n";
+            s += "        " + p.id + "\n";
         }
-        s += "\n";
+        s += "others:\n";
         for (Player p : players) {
-            s += p.id + "\n";
+            s += "        " + p.id + "\n";
         }
         System.out.println(s);
 
@@ -89,7 +89,7 @@ public class Room {
     }
 
     public void receiveInputData(Player player, String s) {
-        if(player == activePlayer) {
+        if(player == activePlayer && !readyPlayers.contains(player)) {
             sendInputData(next, s);
             buffer.put(next++, s);
         }
@@ -117,6 +117,7 @@ public class Room {
 
     public void sendInputData(int msgId, String s) {
         for (Player player : players) {
+            if(player == activePlayer) continue;
             sendInputData(player, msgId, s);
         }
     }

@@ -24,6 +24,7 @@ public class Main {
     }
 
     public void receiveAuthorize(ChannelHandlerContext ctx, int id) {
+        System.out.println("id" + id + " >> tries to connect");
         if(!playersId.add(id)) {
             // этот id используется
             ctx.close();

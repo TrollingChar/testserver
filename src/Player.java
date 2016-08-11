@@ -18,6 +18,7 @@ public class Player {
     }
 
     public void receiveToBattle() {
+        System.out.println("id" + id + " << start");
         // мы не хотим, чтобы игрока кинуло в 2 игры сразу
         if(room != null) return;
 
@@ -27,6 +28,7 @@ public class Player {
     }
 
     public void receiveCancel() {
+        System.out.println("id" + id + " << cancel");
         // поздно! мы уже кинули тебя в игру!
         if(room != null) return;
 
@@ -36,6 +38,7 @@ public class Player {
     }
 
     public void receiveDisconnect() {
+        System.out.println("id" + id + " disconnects");
         if(room != null) {
             room.receiveDisconnect(this);
         }
@@ -43,6 +46,7 @@ public class Player {
     }
 
     public void receiveSynchronize(boolean alive) {
+        System.out.println("id" + id + " << syncro" + (alive ? " (alive)" : ""));
         if(room == null) {
             return;
         }
@@ -50,6 +54,7 @@ public class Player {
     }
 
     public void receiveInputData(String s) {
+        System.out.println("id" + id + " << ...");
         if(room == null) {
             return;
         }
@@ -66,6 +71,7 @@ public class Player {
     public void sendAuthConfirm() {
         System.out.println(id);
         ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.AUTH_CONFIRM) + "\n");
+        System.out.println("id" + id + " >> connects");
     }
 
     public void sendStartBattle(int seed, LinkedList<Player> players) {
@@ -73,26 +79,32 @@ public class Player {
         for (Player player : players) {
             s += Base64Codec.Encode(player.id);
         }
-        ctx.writeAndFlush(Base64Codec.Encode(seed) + Base64Codec.EncodeToChar(ServerCommands.START_BATTLE) + s + "\n");
+        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.START_BATTLE) + s + Base64Codec.Encode(seed) + "\n");
+        System.out.println("id" + id + " >> start, seed = " + seed);
     }
 
     public void sendCancel() {
         ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.CANCEL) + "\n");
+        System.out.println("id" + id + " >> cancel");
     }
 
     public void sendHisTurn(int id) {
         ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.HIS_TURN) + Base64Codec.Encode(id) + "\n");
+        System.out.println("id" + this.id + " >> " + id + "'s turn");
     }
 
     public void sendInputData(int msgId, String s) {
         ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.INPUT_DATA) + s + "\n");
+        System.out.println("id" + id + " >> " + msgId);
     }
 
     public void sendEndBattle(int winner) {
         ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.END_BATTLE)+Base64Codec.Encode(winner) + "\n");
+        System.out.println("id" + id + " >> " + id + " wins");
     }
 
     public void sendPlayerLeft(int id) {
         ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.PLAYER_LEFT)+Base64Codec.Encode(id) + "\n");
+        System.out.println("id" + this.id + " >> " + id + " surrenders");
     }
 }

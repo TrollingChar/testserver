@@ -32,7 +32,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String s = (String) msg;
 
-        System.out.println(s);
+        //System.out.println(s);
 
         int messageType;
         if(s == "") {
@@ -89,39 +89,39 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private void receiveRepeat(ChannelHandlerContext ctx, String s) {
         Player pl = Main.I.getPlayer(ctx);
         if(pl == null) ctx.close();
-        pl.receiveRepeat(Base64Codec.DecodeFromString(new WrapperString(s)));
+        else pl.receiveRepeat(Base64Codec.DecodeFromString(new WrapperString(s)));
     }
 
     private void receiveDisconnect(ChannelHandlerContext ctx) {
         System.out.println("disconnect");
         Player pl = Main.I.getPlayer(ctx);
         if(pl == null) ctx.close();
-        pl.receiveDisconnect();
+        else pl.receiveDisconnect();
     }
 
     private void receiveInputData(ChannelHandlerContext ctx, String s) {
         Player pl = Main.I.getPlayer(ctx);
         if(pl == null) ctx.close();
-        pl.receiveInputData(s);
+        else pl.receiveInputData(s);
     }
 
     private void receiveSynchronize(ChannelHandlerContext ctx, String s) {
         Player pl = Main.I.getPlayer(ctx);
         if(pl == null) ctx.close();
         //System.out.println(s.length());
-        pl.receiveSynchronize("".equals(s));
+        else pl.receiveSynchronize("".equals(s));
     }
 
     private void receiveCancel(ChannelHandlerContext ctx, String s) {
         Player pl = Main.I.getPlayer(ctx);
         if(pl == null) ctx.close();
-        pl.receiveCancel();
+        else pl.receiveCancel();
     }
 
     private void receiveToBattle(ChannelHandlerContext ctx, String s) {
         Player pl = Main.I.getPlayer(ctx);
         if(pl == null) ctx.close();
-        pl.receiveToBattle();
+        else pl.receiveToBattle();
     }
 
     private void receiveAuthorize(ChannelHandlerContext ctx, String s) {
