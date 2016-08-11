@@ -91,8 +91,9 @@ public class Room {
     }
 
     public void sendStartBattle() {
+        int seed = (int)(Math.random() * 2147483648.0);
         for (Player player : players) {
-            player.sendStartBattle(players);
+            player.sendStartBattle(seed, players);
         }
     }
 

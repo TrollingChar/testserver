@@ -68,12 +68,12 @@ public class Player {
         ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.AUTH_CONFIRM) + "\n");
     }
 
-    public void sendStartBattle(LinkedList<Player> players) {
+    public void sendStartBattle(int seed, LinkedList<Player> players) {
         String s = "" + Base64Codec.EncodeToChar(players.size());
         for (Player player : players) {
             s += Base64Codec.Encode(player.id);
         }
-        ctx.writeAndFlush(Base64Codec.EncodeToChar(ServerCommands.START_BATTLE) + s + "\n");
+        ctx.writeAndFlush(Base64Codec.Encode(seed) + Base64Codec.EncodeToChar(ServerCommands.START_BATTLE) + s + "\n");
     }
 
     public void sendCancel() {
