@@ -41,6 +41,7 @@ public class Room {
     }
 
     private void newTurn() {
+        System.out.println("new turn");
         buffer.clear();
         next = 0;
         readyPlayers.clear();
@@ -67,6 +68,17 @@ public class Room {
     }
 
     public void receiveSynchronize(Player player, boolean alive) {
+        String s = "sync received";
+        s += player.id + "\n";
+        for (Player p : readyPlayers) {
+            s += p.id + "\n";
+        }
+        s += "\n";
+        for (Player p : players) {
+            s += p.id + "\n";
+        }
+        System.out.println(s);
+
         readyPlayers.add(player);
         if (!alive) {
             playerQueue.remove(player);

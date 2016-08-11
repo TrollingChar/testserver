@@ -23,8 +23,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        if(Main.I.getPlayer(ctx) != null)
-            Main.I.receiveDisconnect(Main.I.getPlayer(ctx));
+        /*if(Main.I.getPlayer(ctx) != null)
+            Main.I.receiveDisconnect(Main.I.getPlayer(ctx));*/
+        receiveDisconnect(ctx);
     }
 
     @Override
@@ -77,9 +78,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
-            if (e.state() == IdleState.READER_IDLE) {
-                if((Main.I.getPlayer(ctx).inHub) || (Main.I.getPlayer(ctx).room != null))
-                    Main.I.receiveDisconnect(Main.I.getPlayer(ctx));
+            if (e.state() == IdleState.ALL_IDLE) {
+                receiveDisconnect(ctx);
+                /*if((Main.I.getPlayer(ctx).inHub) || (Main.I.getPlayer(ctx).room != null))
+                    Main.I.receiveDisconnect(Main.I.getPlayer(ctx));*/
             }
         }
     }
@@ -91,7 +93,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void receiveDisconnect(ChannelHandlerContext ctx) {
-        System.out.println("what?");
+        System.out.println("disconnect");
         Player pl = Main.I.getPlayer(ctx);
         if(pl == null) ctx.close();
         pl.receiveDisconnect();
