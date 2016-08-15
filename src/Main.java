@@ -40,6 +40,7 @@ public class Main {
     }
 
     public void receiveDisconnect(Player player) {
+        hub.remove(player);
         playersId.remove(player.id);
         players.remove(player.ctx);
         player.ctx.close();
